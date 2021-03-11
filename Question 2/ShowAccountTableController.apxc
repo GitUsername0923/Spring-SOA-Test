@@ -1,0 +1,6 @@
+public class ShowAccountTableController {
+    @AuraEnabled
+    public static List<Account> getRecentlyCreatedAccounts(){
+        return new List<Account>([SELECT Name, Website, NumberOfEmployees,CreatedDate FROM Account ORDER BY CreatedDate DESC LIMIT 10 ]);
+    }
+}

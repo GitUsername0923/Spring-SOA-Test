@@ -1,0 +1,32 @@
+public class triggerOnContactHelper {
+    public static void changeNumberOfContacts(List<Contact> triggerNew){
+        Set<Id> accountIds = new Set<Id>();
+        Map<Id,Integer> mMap = new Map<Id,Integer>();
+        for(Contact con :  triggerNew){
+            if(con.AccountId != null){
+                accountIds.add(con.AccountId);  
+                mMap.put(con.AccountId,0);
+            }
+        }
+        List<AggregateResult> lstAggRes = [SELECT count(Id),AccountId FROM Contact WHERE AccountId IN :accountIds GROUP BY AccountId];
+        List<Account> accountsToUpdate = new List<Account>();
+        for(AggregateResult aggRes : lstAggRes){
+            
+            mMap.put((Id)aggRes.get('AccountId'),(Integer)aggRes.get('expr0'));
+            
+        }
+        for(String key : mMap.KeySet()){
+            accountsToUpdate.add(new Account(Id=key, Number_of_Contacts__c = mMap.get(key)));
+        }
+        update accountsToUpdate;
+    }
+    public static void changeNumberOfContactsOnUpdate(Map<Id,Contact> oldMap, Map<Id,Contact> newMap){    		  	
+        List<Contact> lstCon = new List<Contact>();
+        for(String conId : oldMap.keySet()){
+            if(oldMap.get(conId).AccountId != newMap.get(conId).AccountId){
+                lstCon.add(oldMap.get(conId));
+            }
+        }
+        changeNumberOfContacts(lstCon);
+    }
+}

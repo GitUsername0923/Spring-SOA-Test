@@ -1,0 +1,13 @@
+public class MakeCalloutSOA {
+    public static void makeCallout(){
+        Http http = new Http();
+        HttpRequest request = new HttpRequest();
+        request.setMethod('GET');
+        request.setEndpoint('https://postman-echo.com/get?foo1=bar1&foo2=bar2');
+        request.setTimeout(120000);
+        HttpResponse response = http.send(request);
+        
+        System.debug('RESPONSE BODY -->> ' + response.getBody());
+        
+    }
+}
